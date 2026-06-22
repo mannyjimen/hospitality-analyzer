@@ -4,9 +4,17 @@ package reviewfilter
 
 import (
 	"bufio"
+	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 )
+
+// Struct for unmarshalling ...business.json entries
+type Business struct {
+	Business_id string `json:"business_id"`
+	City        string `json:"city"`
+}
 
 // map containing cities we want to use for research.
 // All cities are newline separated in 'config/cities.txt'
@@ -62,4 +70,25 @@ func processKeywords() {
 	}
 }
 
-func processBusinesses() {}
+func processBusinesses() {
+	file, err := os.Open("YelpJSON/yelp_academic_dataset_business.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var business Business
+
+	for scanner.Scan() {
+		err := json.Unmarshal([]byte(scanner.Text()), &business)
+		if err != nil {
+			fmt.Println("failed to unmarshall business.json")
+		}
+
+		businesses[business.Business_id] = business.City
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+}
