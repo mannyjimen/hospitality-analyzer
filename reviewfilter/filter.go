@@ -56,17 +56,13 @@ func getNegativeBusinessIDs(streamer ReviewStreamer) []string {
 		}
 	}
 
-	var idList = []string{}
-	for id := range unfairBusinessIDs {
-		idList = append(idList, id)
-	}
-	return idList
+	return convMapToSlice(unfairBusinessIDs)
 }
 
 func (r ReviewStreamer) getNextReview() Review {
 	var review Review
 
-	err := json.Unmarshal([]byte(r.scanner.Text()), &review)
+	err := json.Unmarshal(r.scanner.Bytes(), &review)
 
 	if err != nil {
 		log.Fatal(err)
@@ -81,6 +77,11 @@ func isSelectedBusiness(business_id string) bool {
 	return ok
 }
 
+func isSelectedCity(city string) bool {
+	_, ok := cities[city]
+	return ok
+}
+
 // returns whether a negative keyword in the review text
 func isUnfairReview(review_text string) bool {
 	for keyword := range keywords {
@@ -89,4 +90,12 @@ func isUnfairReview(review_text string) bool {
 		}
 	}
 	return false
+}
+
+func convMapToSlice(m map[string]struct{}) []string {
+	s := []string{}
+	for str := range m {
+		s = append(s, str)
+	}
+	return s
 }

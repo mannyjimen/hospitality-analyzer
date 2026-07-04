@@ -81,12 +81,15 @@ func processBusinesses() {
 	var business Business
 
 	for scanner.Scan() {
-		err := json.Unmarshal([]byte(scanner.Text()), &business)
+		err := json.Unmarshal(scanner.Bytes(), &business)
 		if err != nil {
 			fmt.Println("failed to unmarshall business.json")
 		}
 
-		businesses[business.Business_id] = business.City
+		if isSelectedCity(business.City) {
+			businesses[business.Business_id] = business.City
+		}
+
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
