@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
+
+	"github.com/mannyjimen/hospitality-analyzer/helper"
 )
 
 // Struct for unmarshalling ...business.json entries
@@ -29,6 +32,8 @@ var keywords = make(map[string]struct{})
 var businesses = make(map[string]string)
 
 func preprocess() {
+	defer helper.TrackTime(time.Now(), "Preprocess")
+
 	processCities()
 	processKeywords()
 	processBusinesses()

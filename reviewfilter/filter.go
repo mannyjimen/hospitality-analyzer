@@ -6,6 +6,9 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/mannyjimen/hospitality-analyzer/helper"
 )
 
 type Review struct {
@@ -19,7 +22,6 @@ type ReviewStreamer struct {
 }
 
 func GetNegativeBusinessIDs() []string {
-
 	preprocess()
 	streamer := getReviewStreamer("YelpJSON/yelp_academic_dataset_review.json")
 	ids := getNegativeBusinessIDs(streamer)
@@ -28,6 +30,8 @@ func GetNegativeBusinessIDs() []string {
 }
 
 func getReviewStreamer(filePath string) ReviewStreamer {
+	defer helper.TrackTime(time.Now(), "getReviewStreamer")
+
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -47,6 +51,8 @@ func getReviewStreamer(filePath string) ReviewStreamer {
 //if so, we need to store/remember the business_id of this "unfair treatement" review
 
 func getNegativeBusinessIDs(streamer ReviewStreamer) []string {
+	defer helper.TrackTime(time.Now(), "getNegativeBusinessIDs")
+
 	var unfairBusinessIDs = make(map[string]struct{})
 	for streamer.scanner.Scan() {
 		review := streamer.getNextReview()
@@ -92,6 +98,7 @@ func isUnfairReview(review_text string) bool {
 	return false
 }
 
+// helper functions
 func convMapToSlice(m map[string]struct{}) []string {
 	s := []string{}
 	for str := range m {
