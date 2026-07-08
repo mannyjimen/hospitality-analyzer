@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/mannyjimen/hospitality-analyzer/helper"
@@ -48,7 +49,7 @@ func processCities() {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		city := scanner.Text()
+		city := strings.ToLower(scanner.Text())
 		cities[city] = struct{}{}
 	}
 
@@ -66,7 +67,7 @@ func processKeywords() {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		keyword := scanner.Text()
+		keyword := strings.ToLower(scanner.Text())
 		keywords[keyword] = struct{}{}
 	}
 
@@ -83,9 +84,10 @@ func processBusinesses() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	var business Business
 
 	for scanner.Scan() {
+		var business Business
+
 		err := json.Unmarshal(scanner.Bytes(), &business)
 		if err != nil {
 			fmt.Println("failed to unmarshall business.json")
@@ -96,6 +98,7 @@ func processBusinesses() {
 		}
 
 	}
+
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}

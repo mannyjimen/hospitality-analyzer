@@ -5,8 +5,10 @@ import (
 )
 
 func main() {
-	business_ids := reviewfilter.GetNegativeBusinessIDs()
+	business_ids := reviewfilter.GetUnfairBusinessIDs()
 	_ = business_ids
+
+	// fmt.Println(len(business_ids))
 
 	// for _, id := range business_ids {
 	// 	fmt.Println(id)
