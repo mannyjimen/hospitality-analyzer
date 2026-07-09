@@ -11,18 +11,9 @@ import (
 	"github.com/mannyjimen/hospitality-analyzer/helper"
 )
 
-//ARCHIVED
-// type Review struct {
-// 	Business_id string `json:"business_id"`
-// 	Text        string `json:"text"`
-// }
-
-type Business_id struct {
-	Business_id string `json:"business_id"`
-}
-
-type ReviewText struct {
-	Text string `json:"text"`
+type Review struct {
+	Business_id string          `json:"business_id"`
+	Text        json.RawMessage `json:"text"`
 }
 
 type ReviewStreamer struct {
@@ -64,61 +55,29 @@ func getUnfairBusinessIDs(streamer *ReviewStreamer) []string {
 
 	var unfairBusinessIDs = make(map[string]struct{})
 	for streamer.scanner.Scan() {
-		business_id, err := streamer.getBusinessID()
+		review, err := streamer.getReview()
 		if err != nil {
 			continue
 		}
 
-		if isSelectedBusiness(business_id) {
-			reviewText, err := streamer.getReviewText()
-			if err != nil {
-				continue
-			}
-
-			if isUnfairReview(reviewText) {
-				unfairBusinessIDs[business_id] = struct{}{}
-			}
+		if isSelectedBusiness(review.Business_id) && isUnfairReview(review.Text) {
+			unfairBusinessIDs[review.Business_id] = struct{}{}
 		}
 	}
 
 	return convMapToSlice(unfairBusinessIDs)
 }
 
-//ARCHIVED
-// func (r *ReviewStreamer) getNextReview() (Review, error) {
-// 	var review Review
+func (r *ReviewStreamer) getReview() (Review, error) {
+	var review Review
 
-// 	err := json.Unmarshal(r.scanner.Bytes(), &review)
-
-// 	if err != nil {
-// 		return review, err
-// 	}
-
-// 	return review, nil
-// }
-
-func (r *ReviewStreamer) getBusinessID() (string, error) {
-	var b Business_id
-
-	err := json.Unmarshal(r.scanner.Bytes(), &b)
+	err := json.Unmarshal(r.scanner.Bytes(), &review)
 
 	if err != nil {
-		return "", err
+		return review, err
 	}
 
-	return b.Business_id, nil
-}
-
-func (r *ReviewStreamer) getReviewText() (string, error) {
-	var rt ReviewText
-
-	err := json.Unmarshal(r.scanner.Bytes(), &rt)
-
-	if err != nil {
-		return "", err
-	}
-
-	return rt.Text, nil
+	return review, nil
 }
 
 // returns whether the business_id is in businesses map (of chosen cities)
@@ -134,8 +93,9 @@ func isSelectedCity(city string) bool {
 }
 
 // returns whether a negative keyword in the review text
-func isUnfairReview(reviewText string) bool {
-	reviewText = strings.ToLower(reviewText)
+func isUnfairReview(rawText json.RawMessage) bool {
+	reviewText := string(rawText)
+
 	for keyword := range keywords {
 		if strings.Contains(reviewText, keyword) {
 			return true

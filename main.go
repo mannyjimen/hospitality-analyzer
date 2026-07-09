@@ -1,16 +1,12 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/mannyjimen/hospitality-analyzer/reviewfilter"
 )
 
 func main() {
 	business_ids := reviewfilter.GetUnfairBusinessIDs()
-	_ = business_ids
-
-	// fmt.Println(len(business_ids))
-
-	// for _, id := range business_ids {
-	// 	fmt.Println(id)
-	// }
+	fmt.Printf("We gathered %d unfair businesses", len(business_ids))
 }
