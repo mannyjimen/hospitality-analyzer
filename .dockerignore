@@ -1,0 +1,10 @@
+#ignoring dataset and dataset components
+YelpJSON/
+
+#ignoring README and assets
+*.md
+*.png
+
+#ignoring git and vs files
+.git
+.gitignore
