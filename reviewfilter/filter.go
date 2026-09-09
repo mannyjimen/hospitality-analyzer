@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -21,9 +22,9 @@ type ReviewStreamer struct {
 	scanner *bufio.Scanner
 }
 
-func GetUnfairBusinessIDs() []string {
-	preprocess()
-	streamer := getReviewStreamer("YelpJSON/yelp_academic_dataset_review.json")
+func GetUnfairBusinessIDs(configDir, yelpDir string) []string {
+	preprocess(configDir, yelpDir)
+	streamer := getReviewStreamer(filepath.Join(yelpDir, "yelp_academic_dataset_review.json"))
 	ids := getUnfairBusinessIDs(streamer)
 
 	return ids

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -32,16 +33,22 @@ var keywords = make(map[string]struct{})
 // only businesses that reside in target cities will be stored.
 var businesses = make(map[string]string)
 
-func preprocess() {
+func preprocess(configDir, yelpDir string) {
 	defer helper.TrackTime(time.Now(), "Preprocess")
 
-	processCities()
-	processKeywords()
-	processBusinesses()
+	processCities(configDir)
+	processKeywords(configDir)
+	processBusinesses(yelpDir)
 }
 
-func processCities() {
-	file, err := os.Open("config/cities.txt")
+func processCities(configDir string) {
+	// cwd, err := os.Getwd()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	citiesPath := filepath.Join(configDir, "cities.txt")
+	file, err := os.Open(citiesPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,8 +65,8 @@ func processCities() {
 	}
 }
 
-func processKeywords() {
-	file, err := os.Open("config/negative_keywords.txt")
+func processKeywords(configDir string) {
+	file, err := os.Open(filepath.Join(configDir, "negative_keywords.txt"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,8 +83,8 @@ func processKeywords() {
 	}
 }
 
-func processBusinesses() {
-	file, err := os.Open("YelpJSON/yelp_academic_dataset_business.json")
+func processBusinesses(yelpDir string) {
+	file, err := os.Open(filepath.Join(yelpDir, "yelp_academic_dataset_business.json"))
 	if err != nil {
 		log.Fatal(err)
 	}
