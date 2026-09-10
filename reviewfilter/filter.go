@@ -53,7 +53,11 @@ func getUnfairBusinessIDs(streamer *ReviewStreamer) []string {
 	defer helper.TrackTime(time.Now(), "Business Extraction")
 
 	var unfairBusinessIDs = make(map[string]struct{})
-	for streamer.scanner.Scan() {
+
+	unfairReviewCount := 0
+
+	for streamer.scanner.Scan() && unfairReviewCount < 5000 {
+
 		review, err := streamer.getReview()
 		if err != nil {
 			continue
@@ -61,6 +65,7 @@ func getUnfairBusinessIDs(streamer *ReviewStreamer) []string {
 
 		if isSelectedBusiness(review.Business_id) && isUnfairReview(review.Text) {
 			unfairBusinessIDs[review.Business_id] = struct{}{}
+			unfairReviewCount++
 		}
 	}
 
@@ -85,7 +90,7 @@ func isSelectedBusiness(business_id string) bool {
 	return ok
 }
 
-func isSelectedCity(city string) bool {
+func isTargetCity(city string) bool {
 	city = strings.ToLower(city)
 	_, ok := cities[city]
 	return ok
@@ -105,8 +110,6 @@ func isUnfairReview(rawText json.RawMessage) bool {
 
 // helper functions
 func convMapToSlice(m map[string]struct{}) []string {
-	defer helper.TrackTime(time.Now(), "convMapToSlice")
-
 	s := []string{}
 	for str := range m {
 		s = append(s, str)

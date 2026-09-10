@@ -100,7 +100,7 @@ func processBusinesses(yelpDir string) {
 			fmt.Println("failed to unmarshall business.json")
 		}
 
-		if isSelectedCity(business.City) {
+		if isTargetCity(business.City) {
 			businesses[business.Business_id] = business.City
 		}
 
