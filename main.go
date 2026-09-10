@@ -19,9 +19,9 @@ func main() {
 	business_ids := reviewfilter.GetUnfairBusinessIDs(configDir, yelpDir)
 	_ = business_ids
 
-	// fmt.Println(len(business_ids))
+	fmt.Println(len(business_ids))
 
-	// for _, id := range business_ids {
-	// 	fmt.Println(id)
-	// }
+	for _, id := range business_ids {
+		fmt.Println(id)
+	}
 }

@@ -31,8 +31,6 @@ func GetUnfairBusinessIDs(configDir, yelpDir string) []string {
 }
 
 func getReviewStreamer(filePath string) *ReviewStreamer {
-	defer helper.TrackTime(time.Now(), "getReviewStreamer")
-
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +50,7 @@ the selected cities, and if so, determine whether the review is unfair.
 Return a list of all business_ids that pass these checks.
 */
 func getUnfairBusinessIDs(streamer *ReviewStreamer) []string {
-	defer helper.TrackTime(time.Now(), "getUnfairBusinessIDs")
+	defer helper.TrackTime(time.Now(), "Business Extraction")
 
 	var unfairBusinessIDs = make(map[string]struct{})
 	for streamer.scanner.Scan() {
