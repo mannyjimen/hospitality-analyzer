@@ -1,6 +1,6 @@
 //Processing config/cities.txt, config/negative_keywords.txt, and yelp_academic_dataset_business.json
 
-package reviewfilter
+package filter
 
 import (
 	"bufio"

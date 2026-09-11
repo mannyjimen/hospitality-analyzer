@@ -1,4 +1,4 @@
-package reviewfilter
+package filter
 
 import (
 	"bufio"

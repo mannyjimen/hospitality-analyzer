@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mannyjimen/hospitality-analyzer/reviewfilter"
+	"github.com/mannyjimen/hospitality-analyzer/filter"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	configDir := os.Args[1]
 	yelpDir := os.Args[2]
 
-	business_ids := reviewfilter.GetUnfairBusinessIDs(configDir, yelpDir)
+	business_ids := filter.GetUnfairBusinessIDs(configDir, yelpDir)
 	_ = business_ids
 
 	// fmt.Println(len(business_ids))
