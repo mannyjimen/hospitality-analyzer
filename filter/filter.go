@@ -71,7 +71,15 @@ func getUnfairBusinesses(streamer *ReviewStreamer) []Business {
 
 		if isTargetCityBusiness(review.Business_id) && isUnfairReview(review.Text) {
 			unfairBusinessIDs[review.Business_id] = struct{}{}
-			unfairBusinesses = append(unfairBusinesses, businesses[review.Business_id])
+
+			b := businesses[review.Business_id]
+
+			//filling in Categories
+			if b.RawCategories != "" {
+				b.Categories = strings.Split(b.RawCategories, ", ")
+			}
+
+			unfairBusinesses = append(unfairBusinesses, b)
 			unfairReviewCount++
 		}
 	}
