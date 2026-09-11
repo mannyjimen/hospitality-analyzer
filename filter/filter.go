@@ -22,10 +22,10 @@ type ReviewStreamer struct {
 	scanner *bufio.Scanner
 }
 
-func GetUnfairBusinessIDs(configDir, yelpDir string) []string {
+func GetUnfairBusinesses(configDir, yelpDir string) []Business {
 	preprocess(configDir, yelpDir)
 	streamer := getReviewStreamer(filepath.Join(yelpDir, "yelp_academic_dataset_review.json"))
-	ids := getUnfairBusinessIDs(streamer)
+	ids := getUnfairBusinesses(streamer)
 
 	return ids
 }
@@ -49,10 +49,11 @@ Go through every review and determine whether the associated business lies insid
 the selected cities, and if so, determine whether the review is unfair.
 Return a list of all business_ids that pass these checks.
 */
-func getUnfairBusinessIDs(streamer *ReviewStreamer) []string {
+func getUnfairBusinesses(streamer *ReviewStreamer) []Business {
 	defer helper.TrackTime(time.Now(), "Business Extraction")
 
 	var unfairBusinessIDs = make(map[string]struct{})
+	unfairBusinesses := []Business{}
 
 	unfairReviewCount := 0
 
@@ -63,13 +64,19 @@ func getUnfairBusinessIDs(streamer *ReviewStreamer) []string {
 			continue
 		}
 
-		if isSelectedBusiness(review.Business_id) && isUnfairReview(review.Text) {
+		//business already deemed unfair and stored
+		if _, ok := unfairBusinessIDs[review.Business_id]; ok {
+			continue
+		}
+
+		if isTargetCityBusiness(review.Business_id) && isUnfairReview(review.Text) {
 			unfairBusinessIDs[review.Business_id] = struct{}{}
+			unfairBusinesses = append(unfairBusinesses, businesses[review.Business_id])
 			unfairReviewCount++
 		}
 	}
 
-	return convMapToSlice(unfairBusinessIDs)
+	return unfairBusinesses
 }
 
 func (r *ReviewStreamer) getReview() (Review, error) {
@@ -85,7 +92,7 @@ func (r *ReviewStreamer) getReview() (Review, error) {
 }
 
 // returns whether the business_id is in businesses map (of chosen cities)
-func isSelectedBusiness(business_id string) bool {
+func isTargetCityBusiness(business_id string) bool {
 	_, ok := businesses[business_id]
 	return ok
 }
@@ -108,11 +115,11 @@ func isUnfairReview(rawText json.RawMessage) bool {
 	return false
 }
 
-// helper functions
-func convMapToSlice(m map[string]struct{}) []string {
-	s := []string{}
-	for str := range m {
-		s = append(s, str)
-	}
-	return s
-}
+// // ARCHIVED
+// func convMapToSlice(m map[string]struct{}) []string {
+// 	s := []string{}
+// 	for str := range m {
+// 		s = append(s, str)
+// 	}
+// 	return s
+// }

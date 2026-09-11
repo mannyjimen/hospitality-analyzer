@@ -5,7 +5,6 @@ package filter
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,8 +16,10 @@ import (
 
 // Struct for unmarshalling ...business.json entries
 type Business struct {
-	Business_id string `json:"business_id"`
-	City        string `json:"city"`
+	Business_id   string   `json:"business_id"`
+	City          string   `json:"city"`
+	RawCategories string   `json:"categories"`
+	Categories    []string `json:"-"`
 }
 
 // map containing cities we want to use for research.
@@ -31,7 +32,7 @@ var keywords = make(map[string]struct{})
 
 // map containing {business_id : city} pairs
 // only businesses that reside in target cities will be stored.
-var businesses = make(map[string]string)
+var businesses = make(map[string]Business)
 
 func preprocess(configDir, yelpDir string) {
 	defer helper.TrackTime(time.Now(), "Preprocess")
@@ -97,11 +98,11 @@ func processBusinesses(yelpDir string) {
 
 		err := json.Unmarshal(scanner.Bytes(), &business)
 		if err != nil {
-			fmt.Println("failed to unmarshall business.json")
+			log.Fatalf("Failed to unmarshall business.json entry: %s\n", err)
 		}
 
 		if isTargetCity(business.City) {
-			businesses[business.Business_id] = business.City
+			businesses[business.Business_id] = business
 		}
 
 	}

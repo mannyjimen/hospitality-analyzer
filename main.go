@@ -16,12 +16,12 @@ func main() {
 	configDir := os.Args[1]
 	yelpDir := os.Args[2]
 
-	business_ids := filter.GetUnfairBusinessIDs(configDir, yelpDir)
-	_ = business_ids
+	businesses := filter.GetUnfairBusinesses(configDir, yelpDir)
+	_ = businesses
 
-	// fmt.Println(len(business_ids))
+	// fmt.Println(len(businesses))
 
-	// for _, id := range business_ids {
-	// 	fmt.Println(id)
+	// for _, b := range businesses {
+	// 	fmt.Println(b)
 	// }
 }
